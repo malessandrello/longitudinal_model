@@ -1,0 +1,27 @@
+---
+title: "Longitudinal data analysis and modeling"
+author: "Mauricio Alessandrello"
+format: 
+  html:
+    css: style.css
+    toc: TRUE
+    toc-location: left
+    cap-location: bottom
+title-block-banner: "#00524e"
+title-block-banner-color: "white"
+
+---
+
+## Summary
+
+The present document is a longitudinal data analysis and modeling report. The dataset used can be obtained from [here](https://e-m-mccormick.github.io/static/longitudinal-primer/07-datasets.html). This dataset contains the dorsolateral prefrontal cortex (DLPFC) activity meassured when adolescents (ages 11.74 - 15.33) were subjected to an executive function task. Behavioral scores on that tasks are also included. The meassurements were distributed in 4 annually waves.   
+
+## Exploratory data analysis 
+
+
+
+```{r}
+1 + 1
+```
+
+

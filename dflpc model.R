@@ -43,6 +43,10 @@ dlpfc_stats <- full_data %>%
   group_by(wave) %>%
   get_summary_stats(dlpfc)
 
+dlpfc_stats_sex <- full_data %>% 
+  group_by(wave, sex) %>%
+  get_summary_stats(dlpfc)
+
 ef_stats <- full_data %>% 
   group_by(wave) %>%
   get_summary_stats(ef)
@@ -56,7 +60,8 @@ dlpfc_box <- full_data %>%
   geom_boxplot()+
   geom_jitter(alpha= 0.2) + 
   theme_minimal() + 
-  theme(legend.position = "none")
+  theme(legend.position = "none")+
+  facet_grid(~sex)
 
 ef_box <- full_data %>%
   ggplot(aes(wave, ef, fill = wave))+
