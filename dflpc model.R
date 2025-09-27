@@ -10,7 +10,8 @@ ex.func_dlpfc <- executive_function %>%
   mutate(wawe = case_when(wawe == "dlpfc1" ~ as_factor(0),
                           wawe == "dlpfc2" ~ as_factor(1),
                           wawe == "dlpfc3" ~ as_factor(2),
-                          wawe == "dlpfc4" ~ as_factor(3)))
+                          wawe == "dlpfc4" ~ as_factor(3)),
+         id = as.factor(id))
 
 ex.func_ef <- executive_function %>% 
   select(1:3, 8:11) %>% 
@@ -18,7 +19,8 @@ ex.func_ef <- executive_function %>%
   mutate(wawe = case_when(wawe == "ef1" ~ as_factor(0),
                           wawe == "ef2" ~ as_factor(1),
                           wawe == "ef3" ~ as_factor(2),
-                          wawe == "ef4" ~ as_factor(3)))
+                          wawe == "ef4" ~ as_factor(3)),
+         id = as.factor(id))
 
 ex.func_age <- executive_function %>% 
   select(1:3, 12:15) %>% 
@@ -26,7 +28,8 @@ ex.func_age <- executive_function %>%
   mutate(wawe = case_when(wawe == "age1" ~ as_factor(0),
                           wawe == "age2" ~ as_factor(1),
                           wawe == "age3" ~ as_factor(2),
-                          wawe == "age4" ~ as_factor(3)))
+                          wawe == "age4" ~ as_factor(3)),
+         id = as.factor(id))
 
 
 
@@ -50,6 +53,20 @@ dlpfc_box <- full_data %>%
   ggplot(aes(wawe, dlpfc, fill = wawe))+
   geom_boxplot()+
   geom_jitter(alpha= 0.2) + 
+  theme_minimal() + 
+  theme(legend.position = "none")
+
+ef_box <- full_data %>%
+  ggplot(aes(wawe, ef, fill = wawe))+
+  geom_boxplot()+
+  geom_jitter(alpha= 0.2) + 
+  theme_minimal() + 
+  theme(legend.position = "none")
+
+lines_plot <- full_data %>% 
+  mutate(wawe = as.numeric(wawe)) %>% 
+  ggplot(aes(wawe, dlpfc, color = id))+
+  geom_line()+
   theme_minimal() + 
   theme(legend.position = "none")
 
