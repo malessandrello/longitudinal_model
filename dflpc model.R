@@ -43,6 +43,12 @@ dlpfc_stats <- full_data %>%
   group_by(wave) %>%
   get_summary_stats(dlpfc)
 
+dlpfc_stats <- full_data %>% 
+  group_by(wave) %>%
+  filter(sex == 1) %>% 
+  get_summary_stats(dlpfc)
+
+
 dlpfc_stats_sex <- full_data %>% 
   group_by(wave, sex) %>%
   get_summary_stats(dlpfc)
