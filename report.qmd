@@ -67,7 +67,15 @@ data <- list(ex.func_dlpfc, ex.func_ef, ex.func_age)
 
 full_data <- reduce(data, full_join)
 
+# Missing values
 
+mean(is.na(full_data))
+
+# Balanced groups?
+
+mean(full_data$sex == 1)
+
+mean(full_data$tx == 1)
 
 
 #Summary statistics of the different variables
@@ -95,6 +103,24 @@ dlpfc_stats_sex0 <- full_data %>%
   get_summary_stats(dlpfc)
 
 knitr::kable(dlpfc_stats_sex0, caption = "Statistics of DLPFC activity for sex = 0 across waves")
+
+#DLPFC activity by treatment
+dlpfc_stats_tx1 <- full_data %>% 
+  group_by(wave) %>%
+  filter(tx == 1) %>% 
+  get_summary_stats(dlpfc)
+
+
+knitr::kable(dlpfc_stats_tx1, caption = "Statistics of DLPFC activity for tx = 1 across waves")
+
+dlpfc_stats_tx0 <- full_data %>% 
+  group_by(wave) %>%
+  filter(tx == 0) %>% 
+  get_summary_stats(dlpfc)
+
+
+knitr::kable(dlpfc_stats_tx0, caption = "Statistics of DLPFC activity for tx = 0 across waves")
+
 
 
 ```

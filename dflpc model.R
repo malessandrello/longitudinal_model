@@ -1,8 +1,10 @@
 library(tidyverse)
 library(readr)
 library(lmerTest)
+library(ggpubr)
+library(rstatix)
 
-executive_function <- read_csv("longitudinal_model/datasets/executive-function.csv")
+executive_function <- read_csv("datasets/executive-function.csv")
 
 
 
@@ -64,10 +66,29 @@ age_stats <- full_data %>%
 dlpfc_box <- full_data %>%
   ggplot(aes(wave, dlpfc, fill = wave))+
   geom_boxplot()+
-  geom_jitter(alpha= 0.2) + 
+  geom_signif() + 
   theme_minimal() + 
   theme(legend.position = "none")+
   facet_grid(~sex)
+
+full_data %>% 
+  mutate(sex = as_factor(sex)) %>% 
+ggplot(aes(wave, dlpfc, fill = sex))+
+  geom_boxplot()+
+geom_pwc()+
+  theme_minimal() + 
+  theme(legend.position = "none")+
+  facet_grid(~tx)
+
+full_data %>% 
+  mutate(tx = as_factor(tx)) %>% 
+  ggplot(aes(wave, dlpfc, fill = tx))+
+  geom_boxplot()+
+  geom_pwc()+
+  theme_minimal() + 
+  theme(legend.position = "none")
+
+
 
 ef_box <- full_data %>%
   ggplot(aes(wave, ef, fill = wave))+
