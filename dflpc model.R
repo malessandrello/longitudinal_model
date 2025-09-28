@@ -160,3 +160,65 @@ summary(lmerTest::lmer(dlpfc ~  wave + sex + (wave | id),
                na.action = na.omit,
                REML = TRUE,
                data = data))
+
+dlpfc_model_sex <- lmerTest::lmer(dlpfc ~  wave + sex  +(wave | id), 
+                              na.action = na.omit,
+                              REML = TRUE,
+                              data = data)
+
+summary(dlpfc_model_sex)
+
+
+data1 <- data %>% 
+  filter(wave == 0 & dlpfc > 2) %>% 
+  mutate(id = as.numeric(id)) %>% 
+  pull(id)
+
+data2 <- data %>% 
+  filter(id %in% data1) %>%
+  mutate(wave = as.factor(wave)) %>% 
+  ggplot(aes(wave, dlpfc))+
+  geom_boxplot()+
+  geom_pwc()
+
+full <- full_data %>% 
+  filter(wave == 0)
+
+mean(full$dlpfc>2)
+
+data2 <- data %>% 
+  filter(id %in% data1) %>% 
+  group_by(wave) %>% 
+  get_summary_stats(dlpfc)
+
+get_summary_stats(data2)
+
+data2 <- data %>% 
+  filter(wave == 0) %>% 
+  mutate(penalty = ifelse(dlpfc >= 1.5, 1, 0))
+
+data <- full_join(data, data2) %>% 
+  mutate(penalty = ifelse(is.na(penalty), 0, penalty))
+
+
+
+
+dlpfc_model_sex <- lmerTest::lmer(dlpfc ~  wave + sex + penalty +(wave | id), 
+                                  na.action = na.omit,
+                                  REML = TRUE,
+                                  data = data1)
+
+summary(dlpfc_model_sex)
+
+check_model(dlpfc_model_sex, base_size = 8, size_title = 8)
+performance(dlpfc_model_sex)
+
+
+ids <- data %>% 
+  filter(wave == 0 & dlpfc >= 1.5) %>% 
+  mutate(id = as.numeric(id)) %>% 
+  pull(id)
+
+data1 <- data %>% 
+  mutate(penalty = ifelse(id %in% ids, 1, 0))
+

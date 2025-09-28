@@ -15,7 +15,7 @@ title-block-banner-color: "white"
 
 ## Summary
 
-The present document is a longitudinal data analysis and modeling report. The dataset used can be obtained from [here](https://e-m-mccormick.github.io/static/longitudinal-primer/07-datasets.html). This dataset contains the dorsolateral prefrontal cortex (DLPFC) activity measured when adolescents (ages 11.74 - 15.33) were subjected to an executive function task. Behavioral scores on that tasks are also included. The measurements were distributed in 4 annually waves. The variables of the dataset are subject identification ('id'), subject sex ('sex'), treatment group ('tx'), annual measures of DLPFC activity during task ('dlpfc'), behavioral score on that task ('ef') and age('age')  
+The present document is a longitudinal data analysis and modeling report. The dataset used can be obtained from [here](https://e-m-mccormick.github.io/static/longitudinal-primer/07-datasets.html). This dataset contains the dorsolateral prefrontal cortex (DLPFC) activity measured when adolescents (ages 11.74 - 15.33) were subjected to an executive function task. Behavioral scores on that tasks are also included. The measurements were distributed in 4 annually waves. The variables of the dataset are subject identification ('id'), subject sex ('sex'), treatment group ('tx'), annual measures of DLPFC activity during task ('dlpfc'), behavioral score on that task ('ef') and age('age'). In this study, the focus will be in the DLPFC activity.   
 
 ## Dataset Organizing 
 
@@ -28,6 +28,9 @@ library(lmerTest)
 library(rstatix)
 library(ggpubr)
 library(knitr)
+library(easystats)
+options(digits = 2)
+
 
 # Load data and transform to long format
 executive_function <- read_csv("datasets/executive-function.csv")
@@ -72,6 +75,8 @@ full_data <- reduce(data, full_join)
 
 ## Exploratory Data Analysis
 
+In this section the characteristics of the dataset are evaluated regarding missing values, balance and main statistics.
+
 ```{r eda, warning=FALSE, message=FALSE}
 # Missing values
 
@@ -89,14 +94,23 @@ full_data_sex1 <- full_data %>%
 full_data_sex0 <- full_data %>% 
   filter(sex == 0)  
 
-mean(full_data_sex1$tx == 1)
+kable(tibble(expand.grid(Sex = c(0,1),
+                         Treatment = c(0,1)),
+             Proportion = c(mean(full_data_sex0$tx == 0),
+                            mean(full_data_sex1$tx == 0),
+                            mean(full_data_sex0$tx == 1),
+                            mean(full_data_sex1$tx == 1))))
 
-mean(full_data_sex1$tx == 0)
 
-mean(full_data_sex0$tx == 1)
+```
 
-mean(full_data_sex0$tx == 0)
+There is no balance of sex within treatment. Most of the subjects (64%) of treatment 0 correspond to sex 1 and most of the subjects (66%) of treatment 1 correspond to sex 0. If there is an effect of treatment in the DLPFC activity, it could be biased by any sex effect.
 
+***
+
+Here, main statistics of the DLPFC activity variable are presented.
+
+```{r statistics, warning=FALSE, message=FALSE}
 #Summary statistics of the different variables
 
 #Overall DLPFC activity
@@ -105,7 +119,7 @@ dlpfc_stats <- full_data %>%
   group_by(wave) %>%
   get_summary_stats(dlpfc)
 
-knitr::kable(dlpfc_stats, caption = "Statistics of DLPFC activity across waves")
+kable(dlpfc_stats, caption = "Statistics of DLPFC activity across waves")
 
 
 #DLPFC activity by sex
@@ -116,7 +130,7 @@ dlpfc_stats_sex1 <- full_data %>%
   get_summary_stats(dlpfc)
 
 
-knitr::kable(dlpfc_stats_sex1, caption = "Statistics of DLPFC activity for sex = 1 across waves")
+kable(dlpfc_stats_sex1, caption = "Statistics of DLPFC activity for sex = 1 across waves")
 
 dlpfc_stats_sex0 <- full_data %>% 
   select(- treatment) %>% 
@@ -124,7 +138,7 @@ dlpfc_stats_sex0 <- full_data %>%
   filter(sex == 0) %>% 
   get_summary_stats(dlpfc)
 
-knitr::kable(dlpfc_stats_sex0, caption = "Statistics of DLPFC activity for sex = 0 across waves")
+kable(dlpfc_stats_sex0, caption = "Statistics of DLPFC activity for sex = 0 across waves")
 
 #DLPFC activity by treatment
 dlpfc_stats_tx1 <- full_data %>% 
@@ -142,10 +156,36 @@ dlpfc_stats_tx0 <- full_data %>%
   filter(tx == 0) %>% 
   get_summary_stats(dlpfc)
 
+kable(dlpfc_stats_tx0, caption = "Statistics of DLPFC activity for tx = 0 across waves")
 
-knitr::kable(dlpfc_stats_tx0, caption = "Statistics of DLPFC activity for tx = 0 across waves")
 
 
+```
+
+After examining confidence intervals, in all this cases there was statistical significant difference between the DLPFC activity means at wave 0 and wave 3. In the case of treatment = 0 and sex = 0, it seems that there was no difference between the means at those waves. There was less than 60 subjects in this group. This smaller sample increased the standard error and consequently, the confidence interval:
+
+```{r statistic1, warning=FALSE, message=FALSE}
+dlpfc_stats_tx0_sex0 <- full_data %>% 
+  select(- treatment) %>% 
+  group_by(wave) %>%
+  filter(tx == 0 & sex == 0) %>% 
+  get_summary_stats(dlpfc)
+
+kable(dlpfc_stats_tx0_sex0, caption = "Statistics of DLPFC activity for tx = 0 and sex = 0 across waves")
+
+```
+
+
+Something similar is observed at treatment = 1 and sex = 1 group:
+
+```{r statistic2, warning=FALSE, message=FALSE}
+dlpfc_stats_tx1_sex1 <- full_data %>% 
+  select(- treatment) %>% 
+  group_by(wave) %>%
+  filter(tx == 1 & sex == 1) %>% 
+  get_summary_stats(dlpfc)
+
+kable(dlpfc_stats_tx1_sex1, caption = "Statistics of DLPFC activity for tx = 1 and sex = 1 across waves")
 
 ```
 
@@ -153,11 +193,60 @@ knitr::kable(dlpfc_stats_tx0, caption = "Statistics of DLPFC activity for tx = 0
 
 ## Graphical Data Analysis
 
-```{r}
+
+
+```{r hist, warning=FALSE, message=FALSE, fig.cap= "Distribution of DLPFC activity across waves. A slight shift in the number of observations to higher values can be observed"}
 dlpfc_hist <- full_data %>% 
   ggplot(aes(dlpfc))+
   geom_histogram()+
-  facet_grid(~wave)
+  facet_grid(~wave, labeller = as_labeller(c("0" = "Wave 0",
+                                           "1" = "Wave 1",
+                                           "2" = "Wave 2",
+                                           "3" = "Wave 3")))
+
+dlpfc_hist
+```
+***
+
+The shift to higher values across waves can be observed by the increase in the proportion of observations that are higher than 2 of DLPFC activity:
+
+
+```{r warning=FALSE, message=FALSE}
+wave0 <- full_data %>% 
+  filter(wave == 0)
+
+wave1 <- full_data %>% 
+  filter(wave == 1)
+
+wave2 <- full_data %>% 
+  filter(wave == 2)
+
+wave3 <- full_data %>% 
+  filter(wave == 3)
+
+# proportion of DLPFC values higher than 2 across waves
+kable(tibble(Wave = c(0, 1, 2, 3), 
+       "Proportion > 2 DLPFC activity" = c(mean(wave0$dlpfc > 2, na.rm = TRUE),
+                                           mean(wave1$dlpfc > 2, na.rm = TRUE),
+                                           mean(wave2$dlpfc > 2, na.rm = TRUE),
+                                           mean(wave3$dlpfc > 2, na.rm = TRUE))))
+
+```
+
+
+```{r hist2, warning=FALSE, message=FALSE, fig.cap= "Distribution of DLPFC activity across waves grouping by sex. A slight shift in the number of observations to higher values can be observed."}
+dlpfc_hist2 <- full_data %>% 
+  mutate(sex = ifelse(sex == 0, "Sex 0", "Sex 1")) %>% 
+  ggplot(aes(dlpfc))+
+  geom_histogram()+
+  facet_grid(sex~wave, labeller = as_labeller(c("0" = "Wave 0",
+                                           "1" = "Wave 1",
+                                           "2" = "Wave 2",
+                                           "3" = "Wave 3",
+                                           "Sex 0" = "Sex 0",
+                                           "Sex 1" = "Sex 1")))
+
+dlpfc_hist2
 ```
 
 
@@ -242,3 +331,146 @@ dlpfc_box_tx2 <- full_data %>%
 dlpfc_box_tx2
 
 ```
+
+## Exploratory Data Analysis - Conclusions
+
+* Overall, there was a statistically significant increase of the DLPFC activity over time.
+* Some groups (treatment 0: sex 0 and treatment 1: sex 1) are underrepresented in the dataset.
+
+
+## Modeling
+
+The data will be modeled using a linear mixed effect model using the lmer function of the lmerTest package:
+
+```{r model_wave, warning=FALSE, message=FALSE}
+
+# Model with wave as single fixed effect
+
+data <- data <- full_data %>% 
+  mutate(wave = as.numeric(wave)-1)
+
+model.wave <- lmer(dlpfc ~ wave + (wave | id),
+                   data = data,
+                   REML = TRUE,
+                   na.action = na.omit)
+
+summary(model.wave)
+
+
+```
+***
+
+The fixed effect of time (wave) is statistically signficant. Every year the DLPFC will increase by a factor of 0.12. Let's propose a model that includes sex as a fixed effect:
+
+```{r model_wave_sex, warning=FALSE, message=FALSE}
+# Model with wave and sex as fixed effects
+
+data <- data <- full_data %>% 
+  mutate(wave = as.numeric(wave)-1)
+
+model.wave.sex <- lmer(dlpfc ~ wave + sex + (wave | id),
+                   data = data,
+                   REML = TRUE,
+                   na.action = na.omit)
+
+summary(model.wave.sex)
+
+```
+***
+
+In this case, the time contributes to the DLPFC with a 0.12 yearly increase, as in the previous model, and for those induviduals that belong to the group sex = 1, a constant factor of 0.23 is added. Now, let's consider adding the treatment effect:
+
+
+```{r model_wave_sex_tx, warning=FALSE, message=FALSE}
+# Model with wave, sex and treatment as fixed effects
+
+data <-  full_data %>% 
+  mutate(wave = as.numeric(wave)-1)
+
+model.wave.sex.tx <- lmer(dlpfc ~ wave + sex + tx + (wave | id),
+                   data = data,
+                   REML = TRUE,
+                   na.action = na.omit)
+
+summary(model.wave.sex.tx)
+
+```
+***
+
+The treatment effect is not statistically significant, so it will not be included in the model. In the next section, the performance of the two selected models will be checked: 
+
+```{r checks, warning=FALSE, message=FALSE, fig.height= 10}
+
+
+check_model(model.wave, base_size = 8, size_title = 8)
+check_model(model.wave.sex, base_size = 8, size_title = 8)
+
+
+compare_performance(model.wave, model.wave.sex)
+
+
+```
+***
+It can be seen that the model that includes the sex effect has a better performance than the one that does not include it.
+It is also noteworthy that both models present a shoulder on the density curve of the posterior predictive check.
+Interestingly, if we exclude 51 people that have a DLPFC activation higher than 1.5 at the beginning of the study, the shoulder tend to flatten. This is expected because the initial value predicted by the model is 0.44 for sex = 0 and 0.44 + 0.23 for sex = 1.
+
+```{r}
+# Extract the ids that have lower than 1.5 DLPFC activation at the beginning of the study.
+data1 <- data %>% 
+  filter(wave == 0 & dlpfc < 1.5) %>% 
+  mutate(id = as.numeric(id)) %>% 
+  pull(id)
+
+# Construct new data with only those ids.
+data2 <- data %>% 
+  filter(id %in% data1)
+
+# And model using that new data
+model.wave.sex.c <- lmer(dlpfc ~ wave + sex + (wave | id),
+                   data = data2,
+                   REML = TRUE,
+                   na.action = na.omit)
+
+summary(model.wave.sex.c)
+
+
+```
+***
+This is the performance of the model with the excluded data, note the flattened shoulder:
+
+```{r, fig.height= 10}
+check_model(model.wave.sex.c, base_size = 8, size_title = 8)
+performance(model.wave.sex.c)
+
+```
+***
+Here is a boxplot over time of the DLPFC activation of people which initial DLPFC activation was larger than 1.5.
+
+```{r warning=FALSE, message=FALSE}
+data1 <- data %>% 
+  filter(wave == 0 & dlpfc > 1.5) %>% 
+  mutate(id = as.numeric(id)) %>% 
+  pull(id)
+
+data %>% 
+  filter(id %in% data1) %>%
+  mutate(wave = as.factor(wave)) %>% 
+  ggplot(aes(wave, dlpfc))+
+  geom_boxplot()+
+  geom_pwc()
+```
+***
+As it can be seen, this group of individuals with high initial DLPFC activation decrease it over time in average. Therefore, a model that predicts a yearly increase will not be useful for this particular group.  
+
+## Conclusion
+
+The resultant model for the fixed effects on DLPFC measures of this longitudinal study is the following:  
+For sex = 1:
+$$
+DLPFC = 0.12 \cdot year + 0.23 + 0.44
+$$
+For sex = 0:
+$$
+DLPFC = 0.12 \cdot year + 0.23
+$$
