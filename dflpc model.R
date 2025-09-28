@@ -91,9 +91,10 @@ full_data %>%
 
 
 ef_box <- full_data %>%
-  ggplot(aes(wave, ef, fill = wave))+
+  mutate(tx = as_factor(tx)) %>% 
+  ggplot(aes(wave, ef, fill = tx))+
   geom_boxplot()+
-  geom_jitter(alpha= 0.2) + 
+  geom_pwc()+ 
   theme_minimal() + 
   theme(legend.position = "none")
 
