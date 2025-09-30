@@ -150,7 +150,7 @@ window.Quarto = {
    
   <ul>
   <li><a href="#summary" id="toc-summary" class="nav-link active" data-scroll-target="#summary">Summary</a></li>
-  <li><a href="#dataset-organizing" id="toc-dataset-organizing" class="nav-link" data-scroll-target="#dataset-organizing">Dataset Organizing</a></li>
+  <li><a href="#dataset-organization" id="toc-dataset-organization" class="nav-link" data-scroll-target="#dataset-organization">Dataset Organization</a></li>
   <li><a href="#exploratory-data-analysis" id="toc-exploratory-data-analysis" class="nav-link" data-scroll-target="#exploratory-data-analysis">Exploratory Data Analysis</a></li>
   <li><a href="#graphical-data-analysis" id="toc-graphical-data-analysis" class="nav-link" data-scroll-target="#graphical-data-analysis">Graphical Data Analysis</a></li>
   <li><a href="#exploratory-data-analysis---conclusions" id="toc-exploratory-data-analysis---conclusions" class="nav-link" data-scroll-target="#exploratory-data-analysis---conclusions">Exploratory Data Analysis - Conclusions</a></li>
@@ -169,10 +169,11 @@ window.Quarto = {
 
 <section id="summary" class="level2">
 <h2 class="anchored" data-anchor-id="summary">Summary</h2>
-<p>The present document is a longitudinal data analysis and modeling report. The dataset used can be obtained from <a href="https://e-m-mccormick.github.io/static/longitudinal-primer/07-datasets.html">here</a>. This dataset contains the dorsolateral prefrontal cortex (DLPFC) activity measured when adolescents (ages 11.74 - 15.33) were subjected to an executive function task. Behavioral scores on that tasks are also included. The measurements were distributed in 4 annually waves. The variables of the dataset are subject identification (‘id’), subject sex (‘sex’), treatment group (‘tx’), annual measures of DLPFC activity during task (‘dlpfc’), behavioral score on that task (‘ef’) and age(‘age’). In this study, the focus will be in the DLPFC activity.</p>
+<p>The present document is a longitudinal data analysis and modeling report. The dataset used can be obtained from <a href="https://e-m-mccormick.github.io/static/longitudinal-primer/07-datasets.html">here</a>. This dataset contains the dorsolateral prefrontal cortex (DLPFC) activity measured when adolescents (ages 11.74 - 15.33) were subjected to an executive function task. Behavioral scores on that tasks are also included. The measurements were distributed in 4 annually waves. The variables of the dataset are subject identification (‘id’), subject sex (‘sex’), treatment group (‘tx’), annual measures of DLPFC activity during task (‘dlpfc’), behavioral score on that task (‘ef’) and age(‘age’). In this study, the focus will be on the DLPFC activity.</p>
 </section>
-<section id="dataset-organizing" class="level2">
-<h2 class="anchored" data-anchor-id="dataset-organizing">Dataset Organizing</h2>
+<section id="dataset-organization" class="level2">
+<h2 class="anchored" data-anchor-id="dataset-organization">Dataset Organization</h2>
+<p>In this section, the dataset is loaded and transformed to a long format:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Load used libraries</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
@@ -220,7 +221,7 @@ window.Quarto = {
 <span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>         <span class="at">treatment =</span> <span class="fu">ifelse</span>(tx <span class="sc">==</span> <span class="dv">0</span>, <span class="st">"Treatment 0"</span>, <span class="st">"Treatment 1"</span>))</span>
 <span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a><span class="co"># And then were put it all together in a single data frame.</span></span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a><span class="co"># And the it were put all together in a single data frame.</span></span>
 <span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">list</span>(ex.func_dlpfc, ex.func_ef, ex.func_age)</span>
 <span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>full_data <span class="ot">&lt;-</span> <span class="fu">reduce</span>(data, full_join)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -292,7 +293,7 @@ window.Quarto = {
 </table>
 </div>
 </div>
-<p>There is no balance of sex within treatment. Most of the subjects (64%) of treatment 0 correspond to sex 1 and most of the subjects (66%) of treatment 1 correspond to sex 0. If there is an effect of treatment in the DLPFC activity, it could be biased by any sex effect.</p>
+<p>There is no balance of sex within treatment. Most of the subjects (64%) of treatment 0 correspond to sex 1 and most of the subjects (66%) of treatment 1 correspond to sex 0. If there is an effect of treatment on the DLPFC activity, it could be masked by any sex effect.</p>
 <hr>
 <p>Here, main statistics of the DLPFC activity variable are presented.</p>
 <div class="cell">
@@ -863,7 +864,7 @@ window.Quarto = {
 </table>
 </div>
 </div>
-<p>After examining confidence intervals, in all this cases there was statistical significant difference between the DLPFC activity means at wave 0 and wave 3. In the case of treatment = 0 and sex = 0, it seems that there was no difference between the means at those waves. There was less than 60 subjects in this group. This smaller sample increased the standard error and consequently, the confidence interval:</p>
+<p>After examining confidence intervals, in all these cases there was statistical significant difference between the DLPFC activity means at wave 0 and wave 3. In the case of treatment = 0 and sex = 0, it seems that there was no difference between the means at those waves. There was less than 60 subjects in this group. This smaller sample increased the standard error and consequently, the confidence interval:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>dlpfc_stats_tx0_sex0 <span class="ot">&lt;-</span> full_data <span class="sc">%&gt;%</span> </span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span> treatment) <span class="sc">%&gt;%</span> </span>
@@ -1257,7 +1258,7 @@ window.Quarto = {
 <div class="quarto-figure quarto-figure-center page-columns page-full">
 <figure class="figure page-columns page-full">
 <p><img src="report_files/figure-html/graphic3-1.png" class="img-fluid figure-img" width="672"></p>
-<figcaption class="margin-caption">In a same wave, there is no difference in the DLPFC activiy among individuals of the same sex and different treatment</figcaption>
+<figcaption class="margin-caption">In a same wave, there is no difference in the DLPFC activity among individuals of the same sex and different treatment</figcaption>
 </figure>
 </div>
 </div>
@@ -1300,7 +1301,7 @@ window.Quarto = {
 </section>
 <section id="modeling" class="level2">
 <h2 class="anchored" data-anchor-id="modeling">Modeling</h2>
-<p>The data will be modeled using a linear mixed effect model using the lmer function of the lmerTest package:</p>
+<p>The data will be modeled with a linear mixed effect model using the lmer function of the lmerTest package:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Model with wave as single fixed effect</span></span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -1392,7 +1393,7 @@ sex  -0.640  0.006</code></pre>
 </div>
 </div>
 <hr>
-<p>In this case, the time contributes to the DLPFC with a 0.12 yearly increase, as in the previous model, and for those induviduals that belong to the group sex = 1, a constant factor of 0.23 is added. Now, let’s consider adding the treatment effect:</p>
+<p>In this case, the time contributes to the DLPFC with a 0.12 yearly increase, as in the previous model, and for those individuals that belong to the group sex = 1, a constant factor of 0.23 is added. Now, let’s consider adding the treatment effect:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Model with wave, sex and treatment as fixed effects</span></span>
 <span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -1475,7 +1476,7 @@ model.wave.sex | 3532.5 (0.360) |      0.573 |      0.026 | 0.561 | 0.589 | 0.70
 </div>
 </div>
 <hr>
-<p>It can be seen that the model that includes the sex effect has a better performance than the one that does not include it. It is also noteworthy that both models present a shoulder on the density curve of the posterior predictive check. Interestingly, if we exclude 51 people that have a DLPFC activation higher than 1.5 at the beginning of the study, the shoulder tend to flatten. This is expected because the initial value predicted by the model is 0.44 for sex = 0 and 0.44 + 0.23 for sex = 1.</p>
+<p>It can be seen that the model that includes the sex effect performs better. It is also noteworthy that both models present a shoulder on the density curve of the posterior predictive check. Interestingly, if we exclude 51 people that have a DLPFC activation higher than 1.5 at the beginning of the study, the shoulder tends to flatten. This is expected because the initial value predicted by the model is 0.44 for sex = 0 and 0.44 + 0.23 for sex = 1.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract the ids that have lower than 1.5 DLPFC activation at the beginning of the study.</span></span>
 <span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>data1 <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span> </span>
@@ -1570,22 +1571,21 @@ AIC    |   AICc |    BIC | R2 (cond.) | R2 (marg.) |   ICC |  RMSE | Sigma
 </div>
 </div>
 <hr>
-<p>As it can be seen, this group of individuals with high initial DLPFC activation present a decrease in it over time in average. Therefore, a model that predicts a yearly increase will not be useful for this particular group.</p>
+<p>As it can be seen, the DLPFC activation on these subjects decrease over time in average. Therefore, a model that predicts a yearly increase will not be useful for this particular group.</p>
 </section>
 <section id="conclusion" class="level2">
 <h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
-<p>The resultant model for the fixed effects on DLPFC measures of this longitudinal study is the following:<br>
+<p>The resultant model for the fixed effects on DLPFC activation measures of this longitudinal study is the following:<br>
 For sex = 1: <span class="math display">\[
 DLPFC = 0.12 \cdot year + 0.23 + 0.44
 \]</span> For sex = 0: <span class="math display">\[
-DLPFC = 0.12 \cdot year + 0.23
+DLPFC = 0.12 \cdot year + 0.44
 \]</span></p>
 </section>
 
 </main>
 <!-- /main column -->
-
-
+&nbsp;
 <hr>
 
 <p style="text-align: center;">A work by <a href="https://github.com/malessandrello">Mauricio Alessandrello</a></p>
@@ -1602,7 +1602,7 @@ DLPFC = 0.12 \cdot year + 0.23
 
 <p style="text-align: center;">
 
-    <a href="httpd://www.linkedin.com/in/mauricio-alessandrello" class="fa fa-linkedin"></a>
+    <a href="https://www.linkedin.com/in/mauricio-alessandrello" class="fa fa-linkedin"></a>
 
     <a href="https://github.com/malessandrello" class="fa fa-github"></a>
 
@@ -1610,6 +1610,7 @@ DLPFC = 0.12 \cdot year + 0.23
 
 
 
+&nbsp;
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {

@@ -16,11 +16,11 @@ title-block-banner-color: "white"
 
 ## Summary
 
-The present document is a longitudinal data analysis and modeling report. The dataset used can be obtained from [here](https://e-m-mccormick.github.io/static/longitudinal-primer/07-datasets.html). This dataset contains the dorsolateral prefrontal cortex (DLPFC) activity measured when adolescents (ages 11.74 - 15.33) were subjected to an executive function task. Behavioral scores on that tasks are also included. The measurements were distributed in 4 annually waves. The variables of the dataset are subject identification ('id'), subject sex ('sex'), treatment group ('tx'), annual measures of DLPFC activity during task ('dlpfc'), behavioral score on that task ('ef') and age('age'). In this study, the focus will be in the DLPFC activity.   
+The present document is a longitudinal data analysis and modeling report. The dataset used can be obtained from [here](https://e-m-mccormick.github.io/static/longitudinal-primer/07-datasets.html). This dataset contains the dorsolateral prefrontal cortex (DLPFC) activity measured when adolescents (ages 11.74 - 15.33) were subjected to an executive function task. Behavioral scores on that tasks are also included. The measurements were distributed in 4 annually waves. The variables of the dataset are subject identification ('id'), subject sex ('sex'), treatment group ('tx'), annual measures of DLPFC activity during task ('dlpfc'), behavioral score on that task ('ef') and age('age'). In this study, the focus will be on the DLPFC activity.   
 
-## Dataset Organizing 
+## Dataset Organization 
 
-In this section, the dataset is loaded and transformed in a long format:
+In this section, the dataset is loaded and transformed to a long format:
 
 ```{r load_data, warning=FALSE, message=FALSE}
 #Load used libraries
@@ -69,7 +69,7 @@ ex.func_age <- executive_function %>%
          treatment = ifelse(tx == 0, "Treatment 0", "Treatment 1"))
 
 
-# And then were put it all together in a single data frame.
+# And the it were put all together in a single data frame.
 data <- list(ex.func_dlpfc, ex.func_ef, ex.func_age)
 
 full_data <- reduce(data, full_join)
@@ -106,7 +106,7 @@ kable(tibble(expand.grid(Sex = c(0,1),
 
 ```
 
-There is no balance of sex within treatment. Most of the subjects (64%) of treatment 0 correspond to sex 1 and most of the subjects (66%) of treatment 1 correspond to sex 0. If there is an effect of treatment in the DLPFC activity, it could be biased by any sex effect.
+There is no balance of sex within treatment. Most of the subjects (64%) of treatment 0 correspond to sex 1 and most of the subjects (66%) of treatment 1 correspond to sex 0. If there is an effect of treatment on the DLPFC activity, it could be masked by any sex effect.
 
 ***
 
@@ -164,7 +164,7 @@ kable(dlpfc_stats_tx0, caption = "Statistics of DLPFC activity for tx = 0 across
 
 ```
 
-After examining confidence intervals, in all this cases there was statistical significant difference between the DLPFC activity means at wave 0 and wave 3. In the case of treatment = 0 and sex = 0, it seems that there was no difference between the means at those waves. There was less than 60 subjects in this group. This smaller sample increased the standard error and consequently, the confidence interval:
+After examining confidence intervals, in all these cases there was statistical significant difference between the DLPFC activity means at wave 0 and wave 3. In the case of treatment = 0 and sex = 0, it seems that there was no difference between the means at those waves. There was less than 60 subjects in this group. This smaller sample increased the standard error and consequently, the confidence interval:
 
 ```{r statistic1, warning=FALSE, message=FALSE}
 dlpfc_stats_tx0_sex0 <- full_data %>% 
@@ -292,7 +292,7 @@ dlpfc_box_sex
 
 ***
 
-```{r graphic3, warning=FALSE, message=FALSE, fig.cap = "In a same wave, there is no difference in the DLPFC activiy among individuals of the same sex and different treatment"}
+```{r graphic3, warning=FALSE, message=FALSE, fig.cap = "In a same wave, there is no difference in the DLPFC activity among individuals of the same sex and different treatment"}
 # Boxplot comparing treatment and sex
 
 dlpfc_box_tx <- full_data %>%
@@ -380,7 +380,7 @@ summary(model.wave.sex)
 ```
 ***
 
-In this case, the time contributes to the DLPFC with a 0.12 yearly increase, as in the previous model, and for those induviduals that belong to the group sex = 1, a constant factor of 0.23 is added. Now, let's consider adding the treatment effect:
+In this case, the time contributes to the DLPFC with a 0.12 yearly increase, as in the previous model, and for those individuals that belong to the group sex = 1, a constant factor of 0.23 is added. Now, let's consider adding the treatment effect:
 
 
 ```{r model_wave_sex_tx, warning=FALSE, message=FALSE}
@@ -413,9 +413,9 @@ compare_performance(model.wave, model.wave.sex)
 
 ```
 ***
-It can be seen that the model that includes the sex effect has a better performance than the one that does not include it.
+It can be seen that the model that includes the sex effect performs better.
 It is also noteworthy that both models present a shoulder on the density curve of the posterior predictive check.
-Interestingly, if we exclude 51 people that have a DLPFC activation higher than 1.5 at the beginning of the study, the shoulder tend to flatten. This is expected because the initial value predicted by the model is 0.44 for sex = 0 and 0.44 + 0.23 for sex = 1. The shoulder is because of the subjects with high initial DLPFC activation values.
+Interestingly, if we exclude 51 people that have a DLPFC activation higher than 1.5 at the beginning of the study, the shoulder tends to flatten. This is expected because the initial value predicted by the model is 0.44 for sex = 0 and 0.44 + 0.23 for sex = 1. 
 
 ```{r}
 # Extract the ids that have lower than 1.5 DLPFC activation at the beginning of the study.
@@ -467,12 +467,12 @@ As it can be seen, the DLPFC activation on these subjects decrease over time in 
 
 ## Conclusion
 
-The resultant model for the fixed effects on DLPFC measures of this longitudinal study is the following:  
+The resultant model for the fixed effects on DLPFC activation measures of this longitudinal study is the following:  
 For sex = 1:
 $$
 DLPFC = 0.12 \cdot year + 0.23 + 0.44
 $$
 For sex = 0:
 $$
-DLPFC = 0.12 \cdot year + 0.23
+DLPFC = 0.12 \cdot year + 0.44
 $$
